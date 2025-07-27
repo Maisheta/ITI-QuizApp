@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'dart:async';
 import 'category_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../core/firebase_service.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+  final String category;
+  const QuizScreen({super.key, required this.category});
+
   @override
   State<QuizScreen> createState() => _QuizScreenState();
 }
@@ -20,13 +26,23 @@ class _QuizScreenState extends State<QuizScreen> {
   Timer? timer;
   int totalQuestions = 10;
   int correctAnswers = 0;
-  int incorrectAnswers = 0;
+  int wrongAnswers = 0;
+  Locale currentLocale = const Locale('en');
 
   @override
   void initState() {
     super.initState();
     fetchQuestions();
     startTimer();
+  }
+
+  void toggleLanguage() {
+    setState(() {
+      currentLocale = currentLocale.languageCode == 'en'
+          ? const Locale('ar')
+          : const Locale('en');
+      Get.updateLocale(currentLocale);
+    });
   }
 
   Future<void> fetchQuestions() async {
@@ -58,22 +74,21 @@ class _QuizScreenState extends State<QuizScreen> {
         currentQuestionIndex = 0;
         selectedAnswer = null;
         showAnswer = false;
+        correctAnswers = 0;
+        wrongAnswers = 0;
       });
     } catch (e) {
       setState(() {
+        isLoading = false;
         questions = [
           {
-            "question":
-                "Error fetching question. Please check your connection.",
-            "options": ["Retry"],
-            "correctAnswer": "Retry",
+            "question": "connection_error".tr,
+            "options": ["retry".tr],
+            "correctAnswer": "retry".tr,
           },
         ];
-        isLoading = false;
       });
     }
-    correctAnswers = 0;
-    incorrectAnswers = 0;
   }
 
   void startTimer() {
@@ -91,12 +106,20 @@ class _QuizScreenState extends State<QuizScreen> {
     });
   }
 
+  Future<void> saveQuizResult() async {
+    FirebaseService().saveQuizResult(
+      correctAnswers: correctAnswers,
+      totalQuestions: 10,
+      category: widget.category,
+    );
+  }
+
   void showTimeOutDialog() {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text("Time's Up"),
-        content: Text("Time is over. Restarting the quiz."),
+        title: Text("time_up".tr),
+        content: Text("time_over".tr),
         actions: [
           TextButton(
             onPressed: () {
@@ -104,7 +127,7 @@ class _QuizScreenState extends State<QuizScreen> {
               fetchQuestions();
               startTimer();
             },
-            child: Text("OK"),
+            child: Text("ok".tr),
           ),
         ],
       ),
@@ -120,7 +143,7 @@ class _QuizScreenState extends State<QuizScreen> {
             questions[currentQuestionIndex]["correctAnswer"]) {
           correctAnswers++;
         } else {
-          incorrectAnswers++;
+          wrongAnswers++;
         }
       });
 
@@ -133,6 +156,8 @@ class _QuizScreenState extends State<QuizScreen> {
           });
           startTimer();
         } else {
+          saveQuizResult();
+
           showDialog(
             context: context,
             builder: (_) => AlertDialog(
@@ -140,8 +165,9 @@ class _QuizScreenState extends State<QuizScreen> {
               content: Text(
                 "You've completed the quiz.\n"
                 "Correct Answers: $correctAnswers\n"
-                "Incorrect Answers: $incorrectAnswers",
+                "Incorrect Answers: $wrongAnswers",
               ),
+
               actions: [
                 TextButton(
                   onPressed: () {
@@ -150,12 +176,9 @@ class _QuizScreenState extends State<QuizScreen> {
                       context,
                       MaterialPageRoute(builder: (context) => CategoryScreen()),
                     );
-                    fetchQuestions();
-                    startTimer();
-                    correctAnswers = 0;
-                    incorrectAnswers = 0;
                   },
-                  child: Text("Restart"),
+
+                  child: Text("restart".tr),
                 ),
               ],
             ),
@@ -192,7 +215,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   children: [
                     _buildIconButton(Icons.arrow_back),
                     Text(
-                      "Round - 1",
+                      '${'round'.tr} - 1',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -230,7 +253,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      "No of Question",
+                                      'question'.tr,
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: Colors.grey,
@@ -405,7 +428,6 @@ class _QuizScreenState extends State<QuizScreen> {
                                                         selectedAnswer = value;
                                                       });
                                                     },
-                                              activeColor: Color(0xFFAB47BC),
                                             ),
                                             Expanded(
                                               child: Text(

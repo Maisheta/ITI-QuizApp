@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
+import '../settings/setting.dart';
+import 'leader.dart';
 import 'quiz_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -35,7 +37,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
         });
       }
     } catch (e) {
-      if (kDebugMode) print('Error fetching categories: $e');
       setState(() => isLoading = false);
     }
   }
@@ -60,10 +61,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+  void _toggleLanguage() {
+    if (Get.locale!.languageCode == 'en') {
+      Get.updateLocale(const Locale('ar'));
+    } else {
+      Get.updateLocale(const Locale('en'));
+    }
   }
 
   @override
@@ -102,9 +105,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text(
-                              "Select Category",
-                              style: TextStyle(
+                            Text(
+                              "select_category".tr,
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -148,8 +151,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (_) =>
-                                                  const QuizScreen(),
+                                              builder: (_) => QuizScreen(
+                                                category: cat['name'],
+                                              ),
                                             ),
                                           );
                                         },
@@ -244,6 +248,49 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             ),
                           ],
                         ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 16,
+                      left: 16,
+                      child: ElevatedButton(
+                        onPressed: _toggleLanguage,
+                        child: Text(
+                          Get.locale?.languageCode == 'ar'
+                              ? 'English'
+                              : 'العربية',
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SettingsScreen(),
+                                ),
+                              );
+                            },
+                            child: const Text("Settings"),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LeaderboardScreen(),
+                                ),
+                              );
+                            },
+                            child: const Text("Leaderboard"),
+                          ),
+                        ],
                       ),
                     ),
                   ],
