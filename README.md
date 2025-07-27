@@ -1,16 +1,36 @@
-# quiz
+# 📚 Flutter Quiz App
 
-A new Flutter project.
+A Flutter-based quiz application that allows users to take categorized quizzes, track scores, and view a global leaderboard. The app features Firebase Authentication, Firestore for result storage, and supports both Arabic and English using GetX.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🚀 Features
 
-A few resources to get you started if this is your first Flutter project:
+- ✅ User authentication with Firebase Auth
+- 🧠 Category-based quizzes
+- 🧾 Save and update quiz results in Firestore
+- 🔁 Automatically updates score if user retakes the same category
+- 🌐 Arabic/English language support using GetX
+- ⏱️ Countdown timer for each question
+- ✅ Shows correct/incorrect feedback after each answer
+- 📊 Leaderboard displaying top scorers
+- 📱 Fully custom static UI (no layout changes)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📦 Requirements
+
+- Flutter SDK (latest)
+- Firebase project (Auth + Firestore enabled)
+- Dio package for API integration
+- GetX for state management and localization
+
+---
+
+## 🛠️ Installation
+
+```bash
+git clone https://github.com/Maisheta/ITI-QuizApp.git
+cd your-repo-name
+flutter pub get
+flutter run
