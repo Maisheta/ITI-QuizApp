@@ -18,6 +18,18 @@ A Flutter-based quiz application that allows users to take categorized quizzes, 
 
 ---
 
+## 📸 Screens
+
+<img width="1920" height="1080" alt="Copy of Untitled Design" src="https://github.com/user-attachments/assets/0167455e-a0f5-4079-bfcb-a6d1465e5733" />
+
+---
+
+## 🎥 Demo Video
+
+https://github.com/user-attachments/assets/8bbfb834-c9ec-4393-afdc-0369b5691801
+
+---
+
 ## 📦 Requirements
 
 - Flutter SDK (latest)
